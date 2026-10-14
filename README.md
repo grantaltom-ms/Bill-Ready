@@ -18,7 +18,7 @@ Phone-first invoicing for property-maintenance contractors: build the invoice fr
 ## Local setup
 
 ```bash
-npm install --legacy-peer-deps
+npm install
 cp .env.example .env.local   # fill in the values below
 npm run dev                  # http://localhost:3000
 ```
