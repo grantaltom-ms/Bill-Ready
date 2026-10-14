@@ -96,8 +96,20 @@ export async function createInvoiceCheckout(
 /** Verify a webhook signature and return the event. In test mode, trust the JSON body. */
 export function parseWebhookEvent(rawBody: string, signature: string | null): Stripe.Event {
   if (isTestMode) return JSON.parse(rawBody) as Stripe.Event;
-  const secret = process.env.STRIPE_WEBHOOK_SECRET;
-  if (!secret) throw new Error("STRIPE_WEBHOOK_SECRET is not set");
+  // Two Stripe destinations post here: one for the platform account (payments) and one for
+  // connected accounts (contractor onboarding). Each has its own signing secret; accept either.
+  const secrets = [process.env.STRIPE_WEBHOOK_SECRET, process.env.STRIPE_CONNECT_WEBHOOK_SECRET].filter(
+    (s): s is string => Boolean(s),
+  );
+  if (secrets.length === 0) throw new Error("STRIPE_WEBHOOK_SECRET is not set");
   if (!signature) throw new Error("Missing stripe-signature header");
-  return stripe().webhooks.constructEvent(rawBody, signature, secret);
+  let lastErr: unknown;
+  for (const secret of secrets) {
+    try {
+      return stripe().webhooks.constructEvent(rawBody, signature, secret);
+    } catch (err) {
+      lastErr = err;
+    }
+  }
+  throw lastErr;
 }

@@ -31,7 +31,8 @@ npm run dev                  # http://localhost:3000
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | same page, publishable key |
 | `SUPABASE_SERVICE_ROLE_KEY` | same page, service role (server only — never expose) |
 | `STRIPE_SECRET_KEY` | Stripe → Developers → API keys (use `sk_test_…` until launch) |
-| `STRIPE_WEBHOOK_SECRET` | `stripe listen --forward-to localhost:3000/api/stripe/webhook` prints it; in prod, from the webhook endpoint |
+| `STRIPE_WEBHOOK_SECRET` | signing secret of the Stripe webhook destination for **Your account** events (payments) |
+| `STRIPE_CONNECT_WEBHOOK_SECRET` | signing secret of the destination for **Connected accounts** events (contractor onboarding) |
 | `RESEND_API_KEY`, `EMAIL_FROM` | resend.com; `EMAIL_FROM` must be on a verified domain |
 | `NEXT_PUBLIC_APP_URL` | `http://localhost:3000` locally, `https://your-domain` in prod |
 
