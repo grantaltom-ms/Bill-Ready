@@ -210,6 +210,11 @@ test("repeated use: five more invoices, partial check payment, edit, void, numbe
   await expect(page.getByText("$40.00")).toHaveCount(2); // one check for $40 + one card $40, not three
 });
 
+test("a failed sign-in link explains what to do", async ({ page }) => {
+  await page.goto("/login?error=link");
+  await expect(page.getByText("didn't work")).toContainText("same device");
+});
+
 test("a stranger can't see the pay page or PDF without the token", async ({ page }) => {
   const r = await page.request.get("/pay/not-a-real-token");
   expect(r.status()).toBe(404);

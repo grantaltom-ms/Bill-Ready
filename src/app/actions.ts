@@ -9,6 +9,8 @@ import { createConnectOnboardingLink, createInvoiceCheckout, appUrl } from "@/li
 import { sendInvoiceEmail } from "@/lib/email";
 import { supabaseServer } from "@/lib/supabase/server";
 import { isTestMode } from "@/lib/db";
+import { requestOrigin } from "@/lib/origin";
+import { friendlyAuthError } from "@/lib/auth-messages";
 
 export type ActionResult = { ok: true; message?: string } | { ok: false; error: string };
 
@@ -27,10 +29,10 @@ export async function sendMagicLink(_prev: ActionResult | null, form: FormData):
   const sb = await supabaseServer();
   const { error } = await sb.auth.signInWithOtp({
     email: email.data,
-    options: { emailRedirectTo: `${appUrl()}/auth/callback` },
+    options: { emailRedirectTo: `${await requestOrigin()}/auth/callback` },
   });
-  if (error) return { ok: false, error: error.message };
-  return { ok: true, message: "Check your email for a sign-in link." };
+  if (error) return { ok: false, error: friendlyAuthError(error.message) };
+  return { ok: true, message: "Check your email for a sign-in link. Open it on this same device and browser." };
 }
 
 export async function signOut() {
