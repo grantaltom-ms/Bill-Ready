@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useActionState, useMemo, useState } from "react";
 import { saveInvoiceAction, type ActionResult } from "@/app/actions";
 import { FormMessage, SubmitButton } from "@/components/forms";
+import { VoiceInvoice, type VoiceResult } from "@/components/voice-invoice";
 import { computeTotals, fmtMoney } from "@/lib/money";
 import type { Customer, InvoiceWithDetails } from "@/lib/types";
 
@@ -31,6 +32,28 @@ export function InvoiceForm({
       : [{ key: 0, description: "", quantity: "1", rate: "", taxable: false }],
   );
   const [taxPct, setTaxPct] = useState(String(invoice ? invoice.tax_rate * 100 : defaults.tax_rate_pct));
+  const [customerId, setCustomerId] = useState(invoice?.customer_id ?? defaults.customer_id);
+  const [notes, setNotes] = useState(invoice?.notes ?? "");
+  const [voice, setVoice] = useState<VoiceResult | null>(null);
+
+  /** Fill the form from a voice draft. The contractor still reviews and saves it. */
+  const applyDraft = (result: VoiceResult) => {
+    const d = result.draft;
+    setVoice(result);
+    setCustomerId(d.customer_id ?? "");
+    if (d.lines.length) {
+      setLines(
+        d.lines.map((l, i) => ({
+          key: Date.now() + i,
+          description: l.description,
+          quantity: String(l.quantity),
+          rate: l.rate ? String(l.rate) : "",
+          taxable: l.taxable,
+        })),
+      );
+    }
+    if (d.notes) setNotes(d.notes);
+  };
 
   const totals = useMemo(
     () =>
@@ -50,10 +73,32 @@ export function InvoiceForm({
     <form action={action} className="space-y-5">
       {invoice && <input type="hidden" name="id" value={invoice.id} />}
 
+      {!invoice && (
+        <div className="space-y-3">
+          <VoiceInvoice onDraft={applyDraft} />
+          {voice && (
+            <div className="card space-y-2 text-sm" data-testid="voice-draft">
+              <p className="font-semibold">Drafted from your voice. Check every line before saving.</p>
+              {voice.draft.warnings.length > 0 && (
+                <ul className="list-inside list-disc text-danger">
+                  {voice.draft.warnings.map((w) => (
+                    <li key={w}>{w}</li>
+                  ))}
+                </ul>
+              )}
+              <details>
+                <summary className="cursor-pointer text-muted">What I heard</summary>
+                <p className="mt-1 whitespace-pre-wrap text-muted">{voice.transcript}</p>
+              </details>
+            </div>
+          )}
+        </div>
+      )}
+
       <div>
         <label htmlFor="customer_id">Customer</label>
         <div className="flex gap-2">
-          <select id="customer_id" name="customer_id" required defaultValue={invoice?.customer_id ?? defaults.customer_id}>
+          <select id="customer_id" name="customer_id" required value={customerId} onChange={(e) => setCustomerId(e.target.value)}>
             <option value="">Choose a customer…</option>
             {customers.map((c) => (
               <option key={c.id} value={c.id}>
@@ -168,7 +213,7 @@ export function InvoiceForm({
 
       <div>
         <label htmlFor="notes">Notes to customer</label>
-        <textarea id="notes" name="notes" rows={2} defaultValue={invoice?.notes ?? ""} placeholder="Thanks for your business. Net 30." />
+        <textarea id="notes" name="notes" rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Thanks for your business. Net 30." />
       </div>
 
       <FormMessage result={result} />

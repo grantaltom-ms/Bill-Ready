@@ -221,3 +221,55 @@ test("a stranger can't see the pay page or PDF without the token", async ({ page
   const pdf = await page.request.get("/api/invoices/00000000-0000-0000-0000-000000000000/pdf?token=bogus");
   expect(pdf.status()).toBe(404);
 });
+
+async function recordOnce(page: Page) {
+  await page.getByRole("button", { name: /Speak the invoice|Stop recording/ }).click();
+  await expect(page.getByRole("button", { name: "Stop recording" })).toBeVisible();
+  await page.waitForTimeout(1500); // let the recorder capture a second or two of audio
+  await page.getByRole("button", { name: "Stop recording" }).click();
+}
+
+test("speak an invoice, review the drafted lines, then save it", async ({ page, context }) => {
+  // Chromium's fake microphone records a tone; test mode returns the fixed transcript.
+  await context.grantPermissions(["microphone"]);
+  const customerId = await addCustomer(page, "Voice Test Customer", "voice@example.com");
+
+  await page.goto(`/invoices/new?customer=${customerId}`);
+  await recordOnce(page);
+  await expect(page.getByTestId("voice-draft")).toContainText("Drafted from your voice");
+  await expect(page.getByLabel("Customer", { exact: true })).toHaveValue(customerId);
+  await expect(page.getByLabel("Line 1 description")).toHaveValue("Labor");
+  await expect(page.getByLabel("Line 1 quantity")).toHaveValue("2");
+  await expect(page.getByLabel("Line 1 rate")).toHaveValue("85");
+  await expect(page.getByLabel("Line 2 description")).toHaveValue("Garbage disposal");
+  await expect(page.getByLabel("Line 2 rate")).toHaveValue("120");
+  await expect(page.locator('input[name="line_taxable"]').nth(1)).toBeChecked();
+
+  // A second recording replaces the draft instead of stacking lines on top of it.
+  await recordOnce(page);
+  await expect(page.getByTestId("line-item")).toHaveCount(2);
+  await expect(page.getByLabel("Line 1 description")).toHaveValue("Labor");
+
+  await submit(page, "Save invoice");
+  await expect(page).toHaveURL(/\/invoices\/[0-9a-f-]+$/);
+  await expect(page.getByText("Garbage disposal").first()).toBeVisible();
+});
+
+test("a failed voice draft shows the reason and leaves the typed form usable", async ({ page, context }) => {
+  await context.grantPermissions(["microphone"]);
+  const customerId = await addCustomer(page, "Voice Test Customer", "voice@example.com");
+  await page.route("**/api/voice/invoice", (route) =>
+    route.fulfill({ status: 502, contentType: "application/json", body: JSON.stringify({ error: "Voice drafting didn't work this time. Try again, or type the invoice." }) }),
+  );
+
+  await page.goto(`/invoices/new?customer=${customerId}`);
+  await recordOnce(page);
+  await expect(page.getByText("Voice drafting didn't work")).toBeVisible();
+  await expect(page.getByTestId("voice-draft")).toHaveCount(0);
+
+  await page.getByLabel("Line 1 description").fill("Typed item");
+  await page.getByLabel("Line 1 rate").fill("50");
+  await submit(page, "Save invoice");
+  await expect(page).toHaveURL(/\/invoices\/[0-9a-f-]+$/);
+  await expect(page.getByText("Typed item").first()).toBeVisible();
+});
