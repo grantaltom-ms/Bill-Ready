@@ -13,6 +13,7 @@ Phone-first invoicing for property-maintenance contractors: build the invoice fr
 - Stripe Connect (Express) onboarding; Checkout per invoice; platform fee in basis points (`br_contractors.platform_fee_bps`, default 100 = 1%)
 - Webhook marks invoices paid; idempotent on event id *and* payment intent
 - Manual payments (check / cash / ACH), partial payments, void
+- Voice invoicing: tap "Speak the invoice", describe the job, and get a draft to review before saving (Whisper for speech, Claude for line items)
 - QBO CSV exports: customers, invoices (one row per line), payments
 
 ## Local setup
@@ -33,6 +34,8 @@ npm run dev                  # http://localhost:3000
 | `STRIPE_SECRET_KEY` | Stripe → Developers → API keys (use `sk_test_…` until launch) |
 | `STRIPE_WEBHOOK_SECRET` | signing secret of the Stripe webhook destination for **Your account** events (payments) |
 | `STRIPE_CONNECT_WEBHOOK_SECRET` | signing secret of the destination for **Connected accounts** events (contractor onboarding) |
+| `OPENAI_API_KEY` | platform.openai.com → API keys (voice: speech to text) |
+| `ANTHROPIC_API_KEY` | console.anthropic.com → API keys (voice: draft line items) |
 | `RESEND_API_KEY`, `EMAIL_FROM` | resend.com; `EMAIL_FROM` must be on a verified domain |
 | `NEXT_PUBLIC_APP_URL` | `http://localhost:3000` locally, `https://your-domain` in prod |
 
@@ -68,8 +71,7 @@ Import the repo, set the env vars above (production Stripe keys only when you're
 
 ## Roadmap (not in v1)
 
-1. Voice → draft invoice (Whisper/Deepgram → Claude → line items)
-2. Bulk import of old invoices/PDFs to seed the customer list
-3. Stripe Billing for a paid tier
-4. QBO API sync (OAuth) instead of CSV
-5. Crew accounts, estimates → invoices, reminders for overdue
+1. Bulk import of old invoices/PDFs to seed the customer list
+2. Stripe Billing for a paid tier
+3. QBO API sync (OAuth) instead of CSV
+4. Crew accounts, estimates → invoices, reminders for overdue

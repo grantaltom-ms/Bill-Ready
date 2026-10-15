@@ -14,6 +14,8 @@ export default defineConfig({
     baseURL: "http://localhost:3100",
     trace: "retain-on-failure",
     ...devices["Pixel 7"], // phone-first (Chromium) — test what contractors actually use
+    // Fake microphone so voice-invoice tests can record without real audio hardware.
+    launchOptions: { args: ["--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream"] },
   },
   webServer: {
     command: "npm run build && npm run start -- -p 3100",
