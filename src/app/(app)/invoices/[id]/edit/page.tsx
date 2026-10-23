@@ -11,7 +11,7 @@ export default async function EditInvoicePage({ params }: { params: Promise<{ id
   if (!invoice) notFound();
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-bold">Edit invoice #{invoice.invoice_number}</h1>
+      <h1 className="text-xl font-medium">Edit invoice #{invoice.invoice_number}</h1>
       <InvoiceForm
         customers={customers}
         invoice={invoice}

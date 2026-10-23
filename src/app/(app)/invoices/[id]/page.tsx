@@ -19,7 +19,7 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
     <div className="space-y-5">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h1 className="text-xl font-bold">Invoice #{invoice.invoice_number}</h1>
+          <h1 className="text-xl font-medium">Invoice #{invoice.invoice_number}</h1>
           <Link href={`/customers/${invoice.customer.id}`} className="text-sm text-accent">
             {invoice.customer.display_name}
           </Link>
@@ -68,7 +68,7 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
 
       {invoice.payments.length > 0 && (
         <section className="card">
-          <h2 className="mb-2 font-semibold">Payments</h2>
+          <h2 className="mb-2 font-medium">Payments</h2>
           <ul className="divide-y divide-line text-sm">
             {invoice.payments.map((p) => (
               <li key={p.id} className="flex justify-between py-2">

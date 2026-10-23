@@ -16,17 +16,17 @@ export default async function CustomerPage({ params }: { params: Promise<{ id: s
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold">{customer.display_name}</h1>
+        <h1 className="text-xl font-medium">{customer.display_name}</h1>
         <Link href={`/invoices/new?customer=${customer.id}`} className="btn-primary">
           New invoice
         </Link>
       </div>
       <section>
-        <h2 className="mb-2 font-semibold">Invoices</h2>
+        <h2 className="mb-2 font-medium">Invoices</h2>
         {invoices.length === 0 ? (
           <p className="card text-sm text-muted">No invoices for this customer yet.</p>
         ) : (
-          <ul className="divide-y divide-line overflow-hidden rounded-xl border border-line bg-card">
+          <ul className="divide-y divide-line overflow-hidden rounded-lg border border-line bg-card">
             {invoices.map((i) => (
               <li key={i.id}>
                 <Link href={`/invoices/${i.id}`} className="flex items-center justify-between px-4 py-3">
@@ -42,7 +42,7 @@ export default async function CustomerPage({ params }: { params: Promise<{ id: s
         )}
       </section>
       <section className="card">
-        <h2 className="mb-3 font-semibold">Details</h2>
+        <h2 className="mb-3 font-medium">Details</h2>
         <CustomerForm customer={customer} />
       </section>
     </div>

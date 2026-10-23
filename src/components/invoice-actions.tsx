@@ -65,7 +65,7 @@ export function InvoiceActions({ invoice, payUrl }: { invoice: InvoiceWithDetail
       {formOpen && !closed && (
         <form action={payAction} className="card space-y-3">
           <input type="hidden" name="invoice_id" value={invoice.id} />
-          <h3 className="font-semibold">Record a payment</h3>
+          <h3 className="font-medium">Record a payment</h3>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label htmlFor="amount">Amount</label>

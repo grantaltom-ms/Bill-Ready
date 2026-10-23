@@ -34,7 +34,7 @@ export default async function Dashboard() {
       </Link>
       <section>
         <div className="mb-2 flex items-center justify-between">
-          <h2 className="font-semibold">Recent invoices</h2>
+          <h2 className="font-medium">Recent invoices</h2>
           <Link href="/invoices" className="text-sm text-accent">
             All
           </Link>
@@ -42,7 +42,7 @@ export default async function Dashboard() {
         {invoices.length === 0 ? (
           <p className="card text-sm text-muted">No invoices yet. Add a customer, then create your first invoice.</p>
         ) : (
-          <ul className="divide-y divide-line overflow-hidden rounded-xl border border-line bg-card">
+          <ul className="divide-y divide-line overflow-hidden rounded-lg border border-line bg-card">
             {invoices.slice(0, 8).map((i) => (
               <li key={i.id}>
                 <Link href={`/invoices/${i.id}`} className="flex items-center justify-between px-4 py-3">

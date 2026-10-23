@@ -10,7 +10,7 @@ export default async function InvoicesPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold">Invoices</h1>
+        <h1 className="text-xl font-medium">Invoices</h1>
         <Link href="/invoices/new" className="btn-primary">
           New invoice
         </Link>
@@ -18,7 +18,7 @@ export default async function InvoicesPage() {
       {invoices.length === 0 ? (
         <p className="card text-sm text-muted">No invoices yet.</p>
       ) : (
-        <ul className="divide-y divide-line overflow-hidden rounded-xl border border-line bg-card">
+        <ul className="divide-y divide-line overflow-hidden rounded-lg border border-line bg-card">
           {invoices.map((i) => (
             <li key={i.id}>
               <Link href={`/invoices/${i.id}`} className="flex items-center justify-between px-4 py-3">

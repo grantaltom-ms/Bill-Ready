@@ -23,8 +23,8 @@ export default async function PayPage({
 
   return (
     <main className="mx-auto w-full max-w-lg flex-1 px-5 py-8">
-      <p className="text-sm text-muted">Invoice from</p>
-      <h1 className="text-2xl font-bold">{inv.contractor.business_name}</h1>
+      <p className="eyebrow">Invoice from</p>
+      <h1 className="text-2xl font-medium">{inv.contractor.business_name}</h1>
       <p className="text-sm text-muted">
         {[inv.contractor.phone, inv.contractor.email].filter(Boolean).join(" · ")}
       </p>
@@ -40,13 +40,13 @@ export default async function PayPage({
           Invoice #{inv.invoice_number} · Due {fmtDateUS(inv.due_date)}
         </p>
         {paid && !isPaid && (
-          <p className="mt-3 rounded-lg bg-accent-soft px-3 py-2 text-sm text-accent">
-            Thanks! Your payment is processing and will show here shortly.
+          <p className="callout mt-3">
+            Thank you. Your payment is processing and will show here soon.
           </p>
         )}
         {isPaid && (
-          <p className="mt-3 rounded-lg bg-green-50 px-3 py-2 text-sm text-ok" data-testid="paid-banner">
-            ✓ Paid {inv.paid_at?.slice(0, 10)}. Thank you!
+          <p className="callout mt-3" data-testid="paid-banner">
+            Paid {inv.paid_at?.slice(0, 10)}. Thank you!
           </p>
         )}
         {inv.status === "void" && <p className="mt-3 text-sm text-muted">This invoice has been voided.</p>}
@@ -59,7 +59,7 @@ export default async function PayPage({
         </form>
       )}
       {!isPaid && inv.status !== "void" && !inv.contractor.stripe_onboarded && (
-        <p className="mt-4 text-center text-sm text-muted">Online payment isn&apos;t set up yet — please pay by check or contact {inv.contractor.business_name}.</p>
+        <p className="mt-4 text-center text-sm text-muted">Online payment isn&apos;t set up yet. Please pay by check, or contact {inv.contractor.business_name}.</p>
       )}
       {mock_checkout && process.env.BILLREADY_TEST_MODE === "1" && <MockCheckout invoiceId={inv.id} amount={due} token={token} />}
 

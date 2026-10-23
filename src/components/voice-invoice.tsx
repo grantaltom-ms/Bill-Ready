@@ -119,7 +119,7 @@ export function VoiceInvoice({ onDraft }: { onDraft: (result: VoiceResult) => vo
           : "Example: “For Henderson. Two hours of labor at 85, and a garbage disposal for 120 plus tax.”"}
       </p>
       {error && (
-        <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-danger">
+        <p role="alert" className="callout callout-error">
           {error}
         </p>
       )}
