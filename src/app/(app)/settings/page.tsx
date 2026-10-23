@@ -1,7 +1,8 @@
 import { requireContractor } from "@/lib/auth";
 import { getStore } from "@/lib/db";
 import { isAccountOnboarded } from "@/lib/stripe";
-import { signOut, startStripeOnboarding } from "@/app/actions";
+import { signOut } from "@/app/actions";
+import { ConnectStripe } from "@/components/connect-stripe";
 import { SettingsForm } from "@/components/settings-form";
 
 export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ stripe?: string }> }) {
@@ -11,7 +12,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
   // Coming back from Stripe onboarding: check status once so the UI is right immediately
   // (the account.updated webhook keeps it right afterwards).
   if (stripeParam && contractor.stripe_account_id && !contractor.stripe_onboarded) {
-    const onboarded = await isAccountOnboarded(contractor.stripe_account_id);
+    const onboarded = await isAccountOnboarded(contractor.stripe_account_id).catch(() => false);
     if (onboarded) contractor = await getStore().updateContractor(contractor.id, { stripe_onboarded: true });
   }
 
@@ -31,11 +32,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
               Connect a Stripe account to take card payments. Stripe verifies your identity and bank; Bill Ready never sees your bank details.
               A {contractor.platform_fee_bps / 100}% platform fee is added to Stripe&apos;s processing fee on each card payment.
             </p>
-            <form action={startStripeOnboarding}>
-              <button className="btn-primary w-full">
-                {contractor.stripe_account_id ? "Finish Stripe setup" : "Connect Stripe"}
-              </button>
-            </form>
+            <ConnectStripe label={contractor.stripe_account_id ? "Finish Stripe setup" : "Connect Stripe"} />
           </>
         )}
       </section>
