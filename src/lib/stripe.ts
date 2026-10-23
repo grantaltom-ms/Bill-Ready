@@ -14,8 +14,9 @@ export function appUrl(): string {
 }
 
 /**
- * Stripe Connect (Express): each contractor gets their own connected account.
- * Returns a one-time onboarding URL to send the contractor to.
+ * Stripe Connect via Accounts v2: each contractor gets a connected account with the
+ * "recipient" configuration (receives transfers from our destination charges).
+ * Returns a one-time Stripe-hosted onboarding URL to send the contractor to.
  */
 export async function createConnectOnboardingLink(contractor: Contractor): Promise<{ accountId: string; url: string }> {
   if (isTestMode) {
@@ -24,28 +25,40 @@ export async function createConnectOnboardingLink(contractor: Contractor): Promi
   const s = stripe();
   let accountId = contractor.stripe_account_id;
   if (!accountId) {
-    const account = await s.accounts.create({
-      type: "express",
-      email: contractor.email ?? undefined,
-      business_profile: { name: contractor.business_name },
-      capabilities: { card_payments: { requested: true }, transfers: { requested: true } },
+    const account = await s.v2.core.accounts.create({
+      display_name: contractor.business_name,
+      contact_email: contractor.email ?? undefined,
+      identity: { country: "US" },
+      dashboard: "express",
+      defaults: {
+        currency: "usd",
+        responsibilities: { fees_collector: "application", losses_collector: "application" },
+      },
+      configuration: {
+        recipient: { capabilities: { stripe_balance: { stripe_transfers: { requested: true } } } },
+      },
       metadata: { contractor_id: contractor.id },
     });
     accountId = account.id;
   }
-  const link = await s.accountLinks.create({
+  const link = await s.v2.core.accountLinks.create({
     account: accountId,
-    type: "account_onboarding",
-    refresh_url: `${appUrl()}/settings?stripe=refresh`,
-    return_url: `${appUrl()}/settings?stripe=return`,
+    use_case: {
+      type: "account_onboarding",
+      account_onboarding: {
+        refresh_url: `${appUrl()}/settings?stripe=refresh`,
+        return_url: `${appUrl()}/settings?stripe=return`,
+      },
+    },
   });
   return { accountId, url: link.url };
 }
 
+/** True once the contractor can receive transfers (the capability our destination charges need). */
 export async function isAccountOnboarded(accountId: string): Promise<boolean> {
   if (isTestMode) return true;
-  const acct = await stripe().accounts.retrieve(accountId);
-  return Boolean(acct.charges_enabled && acct.details_submitted);
+  const acct = await stripe().v2.core.accounts.retrieve(accountId, { include: ["configuration.recipient"] });
+  return acct.configuration?.recipient?.capabilities?.stripe_balance?.stripe_transfers?.status === "active";
 }
 
 /**

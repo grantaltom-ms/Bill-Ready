@@ -75,11 +75,18 @@ export async function updateSettingsAction(_prev: ActionResult | null, form: For
   return { ok: true, message: "Saved" };
 }
 
-export async function startStripeOnboarding() {
+export async function startStripeOnboarding(): Promise<ActionResult | void> {
   const { contractor } = await requireContractor();
-  const { accountId, url } = await createConnectOnboardingLink(contractor);
-  if (accountId !== contractor.stripe_account_id) {
-    await getStore().updateContractor(contractor.id, { stripe_account_id: accountId });
+  let url: string;
+  try {
+    const link = await createConnectOnboardingLink(contractor);
+    if (link.accountId !== contractor.stripe_account_id) {
+      await getStore().updateContractor(contractor.id, { stripe_account_id: link.accountId });
+    }
+    url = link.url;
+  } catch (err) {
+    console.error("Stripe onboarding failed", err);
+    return { ok: false, error: "Stripe couldn't start setup right now. Please try again in a minute." };
   }
   redirect(url);
 }
