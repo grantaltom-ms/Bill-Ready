@@ -1,17 +1,30 @@
 @import "tailwindcss";
 
+/* Milestone Properties design tokens (see the Milestone design guide).
+   Ink, muted and strong-line values are chosen to sit with the guide's palette. */
 :root {
-  --background: #f6f7f5;
-  --foreground: #16211f;
+  --navy: #1a2e44;
+  --navy-press: #122236;
+  --evergreen: #2e6b5e;
+  --moss: #3d7a5f;
+  --evergreen-press: #2a5c46;
+  --amber: #c8922a;
+  --brick: #8b4a2f;
+  --parchment: #faf7f2;
+  --cream: #f5f1e8;
+
+  --background: var(--parchment);
+  --foreground: #0b1b2b;
   --card: #ffffff;
-  --muted: #5d6b67;
-  --line: #e2e6e3;
-  --accent: #0f766e;
+  --muted: #5b6672;
+  --line: rgba(11, 27, 43, 0.1);
+  --line-strong: rgba(11, 27, 43, 0.22);
+  --accent: var(--evergreen);
   --accent-ink: #ffffff;
-  --accent-soft: #e6f4f1;
-  --danger: #b42318;
-  --warn: #b54708;
-  --ok: #067647;
+  --accent-soft: rgba(46, 107, 94, 0.1);
+  --danger: var(--brick);
+  --warn: var(--brick);
+  --ok: var(--evergreen);
 }
 
 @theme inline {
@@ -20,56 +33,144 @@
   --color-card: var(--card);
   --color-muted: var(--muted);
   --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
   --color-accent-soft: var(--accent-soft);
   --color-danger: var(--danger);
   --color-warn: var(--warn);
   --color-ok: var(--ok);
+  --color-navy: var(--navy);
+  --color-evergreen: var(--evergreen);
+  --color-moss: var(--moss);
+  --color-amber: var(--amber);
+  --color-brick: var(--brick);
+  --color-parchment: var(--parchment);
+  --color-cream: var(--cream);
+  --font-sans: var(--font-dm-sans), system-ui, sans-serif;
+  --font-display: var(--font-playfair), Georgia, serif;
 }
 
 html,
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+  font-family: var(--font-dm-sans), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.6;
   -webkit-tap-highlight-color: transparent;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-playfair), Georgia, serif;
+  color: var(--navy);
+  line-height: 1.2;
+  letter-spacing: -0.005em;
+}
+h1 em,
+h2 em {
+  color: var(--evergreen);
+}
+
+.eyebrow {
+  @apply text-xs font-medium uppercase text-evergreen;
+  letter-spacing: 0.18em;
 }
 
 input,
 select,
 textarea {
-  @apply w-full rounded-lg border border-line bg-card px-3 py-2.5 text-base outline-none;
+  @apply w-full rounded border bg-card px-3 py-2.5 text-base outline-none;
+  border-color: var(--line-strong);
 }
 input:focus,
 select:focus,
 textarea:focus {
-  border-color: var(--accent);
+  border-color: var(--evergreen);
   box-shadow: 0 0 0 3px var(--accent-soft);
 }
 label {
   @apply mb-1 block text-sm font-medium text-muted;
 }
 
-.btn {
-  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-base font-semibold transition active:scale-[0.98] disabled:opacity-50;
+.btn,
+.btn-primary,
+.btn-secondary,
+.btn-ghost,
+.btn-danger {
+  @apply inline-flex items-center justify-center gap-2 rounded border-2 border-transparent px-4 py-2.5 text-base font-medium disabled:opacity-50;
+  transition:
+    background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .btn-primary {
-  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-base font-semibold transition active:scale-[0.98] disabled:opacity-50 bg-accent text-accent-ink;
+  @apply bg-evergreen text-accent-ink;
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--moss);
+}
+.btn-primary:active:not(:disabled) {
+  background: var(--evergreen-press);
 }
 .btn-secondary {
-  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-base font-semibold transition active:scale-[0.98] disabled:opacity-50 border border-line bg-card text-foreground;
+  @apply bg-card text-navy;
+  border-color: var(--navy);
+}
+.btn-secondary:hover:not(:disabled) {
+  background: var(--navy);
+  color: var(--cream);
 }
 .btn-ghost {
-  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-base font-semibold transition active:scale-[0.98] disabled:opacity-50 text-accent;
+  @apply text-evergreen;
+}
+.btn-ghost:hover:not(:disabled) {
+  text-decoration: underline;
 }
 .btn-danger {
-  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-base font-semibold transition active:scale-[0.98] disabled:opacity-50 border border-danger/30 bg-card text-danger;
+  @apply bg-card text-brick;
+  border-color: var(--brick);
+}
+.btn-danger:hover:not(:disabled) {
+  background: var(--brick);
+  color: var(--cream);
 }
 .card {
-  @apply rounded-xl border border-line bg-card p-4;
+  @apply rounded-lg border border-line bg-card p-4;
+}
+.callout {
+  @apply rounded-md px-3 py-2 text-sm;
+  border-left: 3px solid var(--evergreen);
+  background: var(--accent-soft);
+  color: var(--navy);
+}
+.callout-warn {
+  border-left-color: var(--amber);
+  background: rgba(200, 146, 42, 0.12);
+}
+.callout-error {
+  border-left-color: var(--brick);
+  background: rgba(139, 74, 47, 0.08);
+  color: var(--brick);
 }
 .pill {
-  @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide;
+  @apply inline-flex items-center rounded-[3px] px-2 py-0.5 text-xs font-medium uppercase;
+  letter-spacing: 0.1em;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  main {
+    animation: fade-up 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+}
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }

@@ -4,7 +4,7 @@ export default async function NewCustomerPage({ searchParams }: { searchParams: 
   const { next } = await searchParams;
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-bold">New customer</h1>
+      <h1 className="text-xl font-medium">New customer</h1>
       <CustomerForm next={next} />
     </div>
   );

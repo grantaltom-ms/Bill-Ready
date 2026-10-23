@@ -18,13 +18,13 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
 
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-bold">Settings</h1>
+      <h1 className="text-xl font-medium">Settings</h1>
 
       <section className="card space-y-3">
-        <h2 className="font-semibold">Card payments</h2>
+        <h2 className="font-medium">Card payments</h2>
         {contractor.stripe_onboarded ? (
           <p className="text-sm text-ok" data-testid="stripe-status">
-            ✓ Stripe connected. Customers can pay invoices online; payouts go to your bank.
+            Stripe connected. Customers can pay invoices online, and payouts go to your bank.
           </p>
         ) : (
           <>
@@ -38,12 +38,12 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
       </section>
 
       <section className="card">
-        <h2 className="mb-3 font-semibold">Business details</h2>
+        <h2 className="mb-3 font-medium">Business details</h2>
         <SettingsForm contractor={contractor} />
       </section>
 
       <section className="card space-y-3">
-        <h2 className="font-semibold">QuickBooks Online export</h2>
+        <h2 className="font-medium">QuickBooks Online export</h2>
         <p className="text-sm text-muted">
           CSV files shaped for QuickBooks&apos; built-in importer. Import customers first, then invoices, then payments.
           Customer names must match QuickBooks exactly — set a &ldquo;QuickBooks display name&rdquo; on any customer that differs.

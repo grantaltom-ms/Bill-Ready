@@ -9,7 +9,7 @@ export default function OnboardingPage() {
   return (
     <main className="flex flex-1 flex-col px-6 py-10">
       <div className="mx-auto w-full max-w-sm">
-        <h1 className="text-2xl font-bold">Set up your business</h1>
+        <h1 className="text-2xl font-medium">Set up your business</h1>
         <p className="mt-1 text-sm text-muted">This is what shows on your invoices. You can change it later.</p>
         <form action={action} className="mt-6 space-y-4">
           <div>

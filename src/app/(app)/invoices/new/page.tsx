@@ -12,7 +12,7 @@ export default async function NewInvoicePage({ searchParams }: { searchParams: P
   if (customers.length === 0) {
     return (
       <div className="space-y-4">
-        <h1 className="text-xl font-bold">New invoice</h1>
+        <h1 className="text-xl font-medium">New invoice</h1>
         <div className="card space-y-3">
           <p className="text-sm text-muted">You need a customer before you can invoice. It only takes a few seconds.</p>
           <Link href="/customers/new?next=/invoices/new" className="btn-primary w-full">
@@ -24,7 +24,7 @@ export default async function NewInvoicePage({ searchParams }: { searchParams: P
   }
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-bold">New invoice</h1>
+      <h1 className="text-xl font-medium">New invoice</h1>
       <InvoiceForm
         customers={customers}
         defaults={{

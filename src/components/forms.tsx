@@ -31,12 +31,12 @@ export function FormMessage({ result }: { result: ActionResult | null }) {
   if (!result) return null;
   if (result.ok)
     return result.message ? (
-      <p role="status" className="rounded-lg bg-accent-soft px-3 py-2 text-sm text-accent">
+      <p role="status" className="callout">
         {result.message}
       </p>
     ) : null;
   return (
-    <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-danger">
+    <p role="alert" className="callout callout-error">
       {result.error}
     </p>
   );
